@@ -14,7 +14,21 @@ public:
     int patients;
     int start_time;
     int end_time;
-    //Start_time and end_time are in 24 hour format, showing the time when the doctor is available
+    // Start_time and end_time are in 24 hour format, showing the time when the doctor is available
+};
+
+class Patient
+{
+public:
+    string name;
+    string email;
+    string phone;
+    string address;
+    string department;
+    string employment;
+    string roll; // If student
+    int ethics_rating;
+    stack<uniqueId> history;
 };
 struct comp
 {
@@ -34,7 +48,7 @@ int main()
         This key value pair is sorted by doc_name.
         Used a pair as key, because doc_names are not unique in dataset
     */
-    int sr = 1; // serial number acts as key
+    int sr = 1; // serial number acts as id for doctors
 
     map<string, vector<Doctors *>> name_mapping;
     /*
@@ -49,7 +63,7 @@ int main()
     /*
          Key here is doc_department.
          Value is vector of pointers to a Doctors object.
-         Used a vectpr because doc_department are unique in dataset.
+         Used a vector because doc_department are unique in dataset.
     */
 
     map<string, vector<int>> id_mapping;
@@ -107,9 +121,9 @@ int main()
 
         if (new_data == true)
         {
-            doc->start_time = rand() % 12; //Constraint: 0<=start_time<12
+            doc->start_time = rand() % 12; // Constraint: 0<=start_time<12
             doc->end_time = rand() % 24;
-            while(doc->end_time <= doc->start_time)
+            while (doc->end_time <= doc->start_time)
                 doc->end_time = rand() % 24;
 
             // Inserting into doc_data
@@ -132,6 +146,7 @@ int main()
             continue;
         }
     }
+    fin.close();
 
     // Printing all the doctors in sorted order
     for (auto it : doc_data)
@@ -139,17 +154,98 @@ int main()
         cout << it.first.first << " " << it.first.second << " " << it.second->name << " " << it.second->email << " " << it.second->phone << " " << it.second->Employement << " " << it.second->Department << " " << it.second->feedback << " " << it.second->patients << " " << it.second->start_time << " " << it.second->end_time << endl;
     }
 
-    //Uncomment following lines to delete a doctor, by putting appropirate details in name and id field
-    // string name;
-    // int id;
-    // if(doc_data.find({name, id}) != doc_data.end()){
-    //     doc_data.erase({name, id});
-    // }
+    // Uncomment following lines to delete a doctor, by putting appropirate details in name and id field
+    //  string name;
+    //  int id;
+    //  if(doc_data.find({name, id}) != doc_data.end()){
+    //      doc_data.erase({name, id});
+    //  }
 
-    //updating a doctor's details, i.e changing the start_time and end_time
-    // doc_data[{name, id}]->start_time = new_start_time;
-    
+    // updating a doctor's details, i.e changing the start_time and end_time
+    //  doc_data[{name, id}]->start_time = new_start_time;
 
+    ifstream fin("patients.csv");
+    getline(fin, line); // skip first line
 
+    int sr_patients = 1;
+    map<uniqueId, Patient *, comp> patient_data;
+    map<string, vector<Patient *>> patient_name_mapping;
+    map<string, Patient *> patient_phone_mapping;
+    map<string, Patient *> patient_email_mapping;
+    map<string, vector<Patient *>> patient_department_mapping;
+    map<string, vector<int>> patient_id_mapping;
+    while (getline(fin, line))
+    {
+        stringstream s(line);
+        Patient *patient = new Patient();
+        getline(s, word, ',');
+        patient->name = word;
+        getline(s, word, ',');
+        patient->email = word;
+        getline(s, word, ',');
+        patient->phone = word;
+        getline(s, word, ',');
+        patient->address = word;
+        getline(s, word, ',');
+        patient->department = word;
+        getline(s, word, ',');
+        patient->employment = word;
+        getline(s, word, ',');
+        patient->roll = word;
+        getline(s, word, ',');
+        patient->ethics_rating = stoi(word);
+
+        bool new_data = true;
+
+        // Inserting into patient_id_mapping
+        if (patient_id_mapping.find(patient->name) == patient_id_mapping.end())
+        {
+            vector<int> v;
+            v.push_back(sr_patients);
+            patient_id_mapping[patient->name] = v;
+        }
+        else
+        {
+
+            for (auto i : patient_id_mapping[patient->name])
+            {
+                if (patient_data[{patient->name, i}]->email == patient->email && patient_data[{patient->name, i}]->phone == patient->phone && patient_data[{patient->name, i}]->address == patient->address && patient_data[{patient->name, i}]->department == patient->department && patient_data[{patient->name, i}]->employment == patient->employment && patient_data[{patient->name, i}]->roll == patient->roll && patient_data[{patient->name, i}]->ethics_rating == patient->ethics_rating)
+                {
+                    new_data = false;
+                    break;
+                }
+            }
+            if (new_data == true)
+                patient_id_mapping[patient->name].push_back(sr_patients);
+        }
+
+        if (new_data == true)
+        {
+            // Inserting into patient_data
+            patient_data[{patient->name, sr_patients++}] = patient;
+
+            // Inserting into patient_name_mapping
+            patient_name_mapping[patient->name].push_back(patient);
+
+            // Inserting into patient_phone_mapping
+            patient_phone_mapping[patient->phone] = patient;
+
+            // Inserting into patient_email_mapping
+            patient_email_mapping[patient->email] = patient;
+
+            // Inserting into patient_department_mapping
+            patient_department_mapping[patient->department].push_back(patient);
+        }
+        else
+        {
+            // This patient already exists
+            continue;
+        }
+    }
+    fin.close();
+
+    // Update code here for assigment system and using start and end time of doctors, history in class patients.
+
+    //Update feedback of doctors and patients, using the history of patients and doctors
     return 0;
 }
