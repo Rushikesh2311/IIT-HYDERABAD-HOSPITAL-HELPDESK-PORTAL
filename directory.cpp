@@ -1,6 +1,7 @@
 #include <bits/stdc++.h>
 using namespace std;
 
+typedef pair<string, int> uniqueId;
 class Doctors
 {
 public:
@@ -12,10 +13,24 @@ public:
     int feedback;
     int patients;
 };
+struct comp
+{
+    template <typename T>
+    bool operator()(const T &l, const T &r) const
+    {
+        return l.first < r.first;
+    }
+};
 
 int main()
 {
-    map<int, Doctors *> doc_data;
+    map<uniqueId, Doctors *, comp> doc_data;
+    /*
+        Key here is doc_name, id (Not in original dataset).
+        Value is a pointer to a Doctors object.
+        This key value pair is sorted by doc_name.
+        Used a pair as key, because doc_names are not unique in dataset
+    */
     int sr = 1; // serial number acts as key
 
     ifstream fin("BM2043_PROJECT_DATA.csv");
@@ -41,12 +56,14 @@ int main()
         doc->feedback = stoi(line);
         getline(ss, line, ',');
         doc->patients = stoi(line);
-        doc_data[sr++] = doc;
+        doc_data[{doc->name, sr++}] = doc;
     }
 
-    // for(auto& x:doc_data){
-    //     cout<<x.first<<" "<<x.second->name<<" "<<x.second->email<<" "<<x.second->phone<<" "<<x.second->Employement<<" "<<x.second->Department<<" "<<x.second->feedback<<" "<<x.second->patients<<endl;
-    // }
+    /* Print the data
+    for(auto& x:doc_data){
+        cout<<x.first.first<<" "<<x.first.second<<endl;
+    }
+    */
 
     return 0;
 }
