@@ -152,10 +152,10 @@ int main()
    fin.close();
 
    // Printing all the doctors in sorted order
-   for (auto it : doc_data)
-   {
-      cout << it.first.first << " " << it.first.second << " " << it.second->name << " " << it.second->email << " " << it.second->phone << " " << it.second->Employement << " " << it.second->Department << " " << it.second->feedback << " " << it.second->patients << " " << it.second->start_time << " " << it.second->end_time << endl;
-   }
+   // for (auto it : doc_data)
+   // {
+   //    cout << it.first.first << " " << it.first.second << " " << it.second->name << " " << it.second->email << " " << it.second->phone << " " << it.second->Employement << " " << it.second->Department << " " << it.second->feedback << " " << it.second->patients << " " << it.second->start_time << " " << it.second->end_time << endl;
+   // }
 
    // Uncomment following lines to delete a doctor, by putting appropirate details in name and id field
    //  string name;
